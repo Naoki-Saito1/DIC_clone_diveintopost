@@ -15,8 +15,11 @@ class TeamsController < ApplicationController
     @team = Team.new
   end
 
-  def edit; end
-
+  def edit
+    if current_user != @team.owner
+      redirect_to @team, notice:  'オーナー以外編集できません！！！！'
+    end
+  end
   def create
     @team = Team.new(team_params)
     @team.owner = current_user
@@ -46,7 +49,13 @@ class TeamsController < ApplicationController
   def dashboard
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
   end
+  def change_owner
 
+    @team = Team.find(params[:id])
+    @team.owner_id = params[:assign]
+    @team.save
+    redirect_to team_path(params[:id])
+  end
   private
 
   def set_team
