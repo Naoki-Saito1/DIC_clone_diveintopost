@@ -55,7 +55,9 @@ class TeamsController < ApplicationController
     #   @team.save
     #   redirect_to team_path, notice: '権限を変更しました。'
     @team.update(owner_id: params[:user_id])
-    redirect_to team_path
+    @owner =  Team.find(params[:id])
+    TeamMailer.team_mail(@owner).deliver
+    redirect_to team_path, notice: '権限を変更しました。'
   end
   private
 
