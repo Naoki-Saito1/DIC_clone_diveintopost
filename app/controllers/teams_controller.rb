@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_team, only: %i[show edit update destroy]
+  before_action :set_team, only: %i[show edit update destroy change] 
 
   def index
     @teams = Team.all
@@ -49,7 +49,14 @@ class TeamsController < ApplicationController
   def dashboard
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
   end
-
+  def change
+    # @owner = User.find(@team.owner_id) 
+    #   @team.owner = assign_user.id
+    #   @team.save
+    #   redirect_to team_path, notice: '権限を変更しました。'
+    @team.update(owner_id: params[:user_id])
+    redirect_to team_path
+  end
   private
 
   def set_team
