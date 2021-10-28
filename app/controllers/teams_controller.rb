@@ -55,8 +55,10 @@ class TeamsController < ApplicationController
     #   @team.save
     #   redirect_to team_path, notice: '権限を変更しました。'
     @team.update(owner_id: params[:user_id])
-    @owner =  Team.find(params[:id])
-    TeamMailer.team_mail(@owner).deliver
+    @change = User.find(@team.owner_id)
+    @change_2 = Team.friendly.find(params[:id])
+    #  binding.irb
+    ChangeMailer.change_mail(@change,@change_2).deliver
     redirect_to team_path, notice: '権限を変更しました。'
   end
   private
@@ -66,6 +68,6 @@ class TeamsController < ApplicationController
   end
 
   def team_params
-    params.fetch(:team, {}).permit %i[name icon icon_cache owner_id keep_team_id]
+    params.fetch(:team, {}).permit %i[name icon icon_cache owner_id keep_team_id ]
   end
 end
