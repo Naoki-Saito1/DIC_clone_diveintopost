@@ -20,7 +20,13 @@ class AgendasController < ApplicationController
       render :new
     end
   end
-
+  def destroy
+    @agenda = Agenda.find(params[:id])
+    @members = @agenda.team.assigns
+    @agenda.destroy
+    DestroyMailer.destroy_mail(@agenda,@members).deliver
+    redirect_to dashboard_path
+  end
   private
 
   def set_agenda

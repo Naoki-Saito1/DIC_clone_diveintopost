@@ -1,6 +1,6 @@
 class TeamsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_team, only: %i[show edit update destroy]
+  before_action :set_team, only: %i[show edit update destroy change] 
 
   def index
     @teams = Team.all
@@ -15,8 +15,11 @@ class TeamsController < ApplicationController
     @team = Team.new
   end
 
-  def edit; end
-
+  def edit
+    if current_user != @team.owner
+      redirect_to @team, notice:  'オーナー以外編集できません！！！！'
+    end
+  end
   def create
     @team = Team.new(team_params)
     @team.owner = current_user
@@ -46,7 +49,18 @@ class TeamsController < ApplicationController
   def dashboard
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
   end
-
+  def change
+    # @owner = User.find(@team.owner_id) 
+    #   @team.owner = assign_user.id
+    #   @team.save
+    #   redirect_to team_path, notice: '権限を変更しました。'
+    @team.update(owner_id: params[:user_id])
+    @change = User.find(@team.owner_id)
+    @change_2 = Team.friendly.find(params[:id])
+    #  binding.irb
+    ChangeMailer.change_mail(@change,@change_2).deliver
+    redirect_to team_path, notice: '権限を変更しました。'
+  end
   private
 
   def set_team
@@ -54,6 +68,6 @@ class TeamsController < ApplicationController
   end
 
   def team_params
-    params.fetch(:team, {}).permit %i[name icon icon_cache owner_id keep_team_id]
+    params.fetch(:team, {}).permit %i[name icon icon_cache owner_id keep_team_id ]
   end
 end
