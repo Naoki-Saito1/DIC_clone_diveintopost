@@ -22,7 +22,9 @@ class AgendasController < ApplicationController
   end
   def destroy
     @agenda = Agenda.find(params[:id])
+    @members = @agenda.team.assigns
     @agenda.destroy
+    DestroyMailer.destroy_mail(@agenda,@members).deliver
     redirect_to dashboard_path
   end
   private
