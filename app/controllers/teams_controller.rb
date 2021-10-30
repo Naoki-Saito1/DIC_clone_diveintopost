@@ -50,10 +50,6 @@ class TeamsController < ApplicationController
     @team = current_user.keep_team_id ? Team.find(current_user.keep_team_id) : current_user.teams.first
   end
   def change
-    # @owner = User.find(@team.owner_id) 
-    #   @team.owner = assign_user.id
-    #   @team.save
-    #   redirect_to team_path, notice: '権限を変更しました。'
     @team.update(owner_id: params[:user_id])
     @change = User.find(@team.owner_id)
     @change_2 = Team.friendly.find(params[:id])
